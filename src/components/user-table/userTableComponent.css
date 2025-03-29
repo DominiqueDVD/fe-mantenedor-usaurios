@@ -1,0 +1,81 @@
+.table-container {
+  width: 80%;
+  margin: auto;
+  overflow-x: auto;
+}
+
+.contact-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  margin-top: 20px;
+}
+
+.contact-table th,
+.contact-table td {
+  border: none;
+  padding: 12px;
+  text-align: left;
+}
+
+
+
+.contact-row {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.contact-row td {
+  background-color: white;
+}
+
+.contact-table th {
+  color: #a2a2a2;
+}
+
+.action-icons {
+  display: flex;
+  gap: 10px;
+  justify-content: left;
+}
+
+.contact-row:hover {
+  background-color: #f8f8f8;
+}
+
+.inactive {
+  border-left: 5px solid #f44336;
+}
+
+.edit-icon, .active-icon, .delete-icon, .inactive-icon, .view-icon {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.edit-icon {
+  color: #0058C7;
+}
+
+
+.active-icon, .view-icon {
+  color: #06a620;
+}
+
+.inactive-icon,
+.delete-icon {
+  color: #F73E3E;
+}
+
+
+@media (max-width: 600px) {
+  .table-container {
+    width: 100%;
+  }
+
+  .add-btn {
+    float: left;
+  }
+}

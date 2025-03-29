@@ -1,0 +1,8 @@
+[
+  { "code": "+56", "label": "Chile", "flag": "https://flagcdn.com/w40/cl.png" },
+  { "code": "+1", "label": "USA", "flag": "https://flagcdn.com/w40/us.png" },
+  { "code": "+52", "label": "México", "flag": "https://flagcdn.com/w40/mx.png" },
+  { "code": "+34", "label": "España", "flag": "https://flagcdn.com/w40/es.png" },
+  { "code": "+44", "label": "Reino Unido", "flag": "https://flagcdn.com/w40/gb.png" },
+  { "code": "+55", "label": "Brasil", "flag": "https://flagcdn.com/w40/br.png" }
+]

@@ -1,0 +1,28 @@
+.header-container {
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  margin: auto;
+}
+
+.add-btn {
+  background: #0058c7;
+  color: white;
+}
+
+.home-title {
+  color: #213547;
+  font-size: 32px;
+  margin: 0;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .header-container {
+    width: 95%;
+  }
+  .home-title {
+    font-size: 20px;
+  }
+}

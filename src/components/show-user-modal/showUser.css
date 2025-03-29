@@ -1,0 +1,25 @@
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 50px;
+}
+
+.user-info img {
+  width: 30%;
+  margin-right: 10px;
+}
+
+.user-info .userText {
+  flex-grow: 1;
+}
+
+@media (max-width: 600px) {
+  .user-info {
+    display: block;
+  }
+  .user-info img {
+    display: flex;
+    margin: auto;
+  }
+}

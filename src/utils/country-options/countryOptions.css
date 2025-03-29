@@ -1,0 +1,9 @@
+.country-option {
+  display: flex;
+  align-items: center;
+}
+
+.country-flag {
+  width: 20px;
+  margin-right: 10px;
+}
