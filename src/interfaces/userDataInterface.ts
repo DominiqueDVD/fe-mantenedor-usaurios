@@ -6,6 +6,7 @@ export interface Phone {
 }
 
 export interface User {
+  created?: string | number | Date;
   password: string;
   id: string; 
   name: string; 

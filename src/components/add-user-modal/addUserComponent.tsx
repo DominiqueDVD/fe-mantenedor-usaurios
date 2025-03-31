@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field, FieldArray, FieldProps } from 'formik';
 import { AddUserModalProps, User } from '../../interfaces/userDataInterface';
 import { handleSubmit, handleDelete } from '../../handlers/userHandlers';
@@ -6,7 +6,9 @@ import { useCountryOptions } from '../../utils/country-options/countryOptions';
 import { validationSchema } from '../../validations/validationsSchema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faTimes } from '@fortawesome/free-solid-svg-icons';
+import useDetectToggleChange from '../../hooks/useDetectToggleChange';
 import Select from 'react-select';
+import ConfirmDeleteModal from '../delete-user-modal/deleteModalComponent';
 import './addUserComponent.css';
 
 const AddUserModal: React.FC<AddUserModalProps> = ({
@@ -14,25 +16,18 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
   contact,
   setAlerts,
 }) => {
-  const initialValues = {
-    id: contact ? contact.id : '',
-    name: contact ? contact.name : '',
-    email: contact ? contact.email : '',
-    password: '',
-    phones: contact
-      ? contact.phones.map((phone) => ({
-          number: phone.number,
-          citycode: phone.citycode,
-          countrycode: phone.countrycode,
-        }))
-      : [{ number: '', citycode: '', countrycode: '' }],
-    isactive: contact ? contact.isactive : false,
-    last_login: contact ? contact.last_login : '',
-  };
-
   const [showPassword, setShowPassword] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const setUsersList = useState<User[]>([])[1];
   const countryOptions = useCountryOptions();
+  const [isActive, setIsActive] = useState(contact?.isactive ?? false);
+  const { isDisabled } = useDetectToggleChange(isActive);
+
+  useEffect(() => {
+    if (isDisabled) {
+      setShowDeleteModal(true);
+    }
+  }, [isDisabled]);
 
   return (
     <div className="modal">
@@ -41,7 +36,6 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
           <h2 className="modal-title">
             {contact ? 'Visualizar Contacto' : 'Agregar Contacto'}
           </h2>
-
           <FontAwesomeIcon
             icon={faTimes}
             className="close-icon"
@@ -50,8 +44,23 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
         </div>
         <br />
         <Formik
-          initialValues={initialValues}
+          initialValues={{
+            id: contact ? contact.id : '',
+            name: contact ? contact.name : '',
+            email: contact ? contact.email : '',
+            password: '',
+            phones: contact
+              ? contact.phones.map((phone) => ({
+                  number: phone.number,
+                  citycode: phone.citycode,
+                  countrycode: phone.countrycode,
+                }))
+              : [{ number: '', citycode: '', countrycode: '' }],
+            isactive: contact ? contact.isactive : false,
+            last_login: contact ? contact.last_login : '',
+          }}
           validationSchema={validationSchema}
+          
           onSubmit={async (values) => {
             if (contact && !values.isactive) {
               await handleDelete(values.id, setUsersList, setAlerts, () => {});
@@ -61,55 +70,58 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
             }
           }}
         >
-          {({ values, setFieldValue, errors, touched }) => (
-            <Form>
-              <div className="modal-body">
-                <label>Nombre</label>
-                <Field type="text" name="name" className="form-input" />
-                {touched.name && errors.name && (
-                  <div className="error">{errors.name}</div>
-                )}
+          {({ values, setFieldValue, errors, touched }) => {
+            useEffect(() => {
+              setIsActive(values.isactive);
+            }, [values.isactive]);
+            return (
+              <Form>
+                <div className="modal-body">
+                  <label>Nombre</label>
+                  <Field type="text" name="name" className="form-input" />
+                  {touched.name && errors.name && (
+                    <div className="error">{errors.name}</div>
+                  )}
 
-                <label>Email</label>
-                <Field type="email" name="email" className="form-input" />
-                {touched.email && errors.email && (
-                  <div className="error">{errors.email}</div>
-                )}
+                  <label>Email</label>
+                  <Field type="email" name="email" className="form-input" />
+                  {touched.email && errors.email && (
+                    <div className="error">{errors.email}</div>
+                  )}
 
-                {!contact && (
-                  <>
-                    <label>Contraseña</label>
-                    <div className="password-input-container">
-                      <Field
-                        type={showPassword ? 'text' : 'password'}
-                        name="password"
-                        className="form-input"
-                      />
-                      <button
-                        type="button"
-                        className="password-toggle-btn"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                      >
-                        <FontAwesomeIcon
-                          icon={showPassword ? faEyeSlash : faEye}
-                          className="eye-icon"
+                  {!contact && (
+                    <>
+                      <label>Contraseña</label>
+                      <div className="password-input-container">
+                        <Field
+                          type={showPassword ? 'text' : 'password'}
+                          name="password"
+                          className="form-input"
                         />
-                      </button>
-                    </div>
-                    {touched.password && errors.password && (
-                      <div className="error">{errors.password}</div>
-                    )}
-                  </>
-                )}
+                        <button
+                          type="button"
+                          className="password-toggle-btn"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                        >
+                          <FontAwesomeIcon
+                            icon={showPassword ? faEyeSlash : faEye}
+                            className="eye-icon"
+                          />
+                        </button>
+                      </div>
+                      {touched.password && errors.password && (
+                        <div className="error">{errors.password}</div>
+                      )}
+                    </>
+                  )}
 
-                <label>Teléfono</label>
-                <div className="phone-input-content">
-                  <FieldArray name="phones">
-                    {() => (
-                      <div>
-                        {values.phones.map((_, index) => (
-                          <div key={index}>
-                            <div className="phone-row">
+                  <label>Teléfono</label>
+                  <div className="phone-input-content">
+                    <FieldArray name="phones">
+                      {() => (
+                        <div>
+                          {values.phones.map((_, index) => (
+                            <div key={index} className="phone-row">
                               <Field name={`phones[${index}].countrycode`}>
                                 {({ field, form }: FieldProps<User>) => (
                                   <Select
@@ -172,69 +184,59 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
                                 )}
                               </Field>
                             </div>
-
-                            {touched.phones &&
-                              touched.phones[index] &&
-                              errors.phones &&
-                              typeof errors.phones[index] === 'object' && (
-                                <div className="error">
-                                  {errors.phones[index].number && (
-                                    <div>{errors.phones[index].number}</div>
-                                  )}
-                                  {errors.phones[index].citycode && (
-                                    <div>{errors.phones[index].citycode}</div>
-                                  )}
-                                  {errors.phones[index].countrycode && (
-                                    <div>
-                                      {errors.phones[index].countrycode}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </FieldArray>
-                </div>
-                {contact && (
-                  <div className="switch-container">
-                    <label htmlFor="isActive" className="switch-label">
-                      Activo
-                    </label>
-                    <label className="switch">
-                      <input
-                        type="checkbox"
-                        id="isActive"
-                        checked={values.isactive}
-                        onChange={(e) => {
-                          setFieldValue('isactive', e.target.checked);
-                          console.log('isactive:', e.target.checked);
-                        }}
-                      />
-
-                      <span className="slider"></span>
-                    </label>
+                          ))}
+                        </div>
+                      )}
+                    </FieldArray>
                   </div>
-                )}
-              </div>
-              <br />
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={closeModal}
-                >
-                  Cancelar
-                </button>
-                <button type="submit" className="submit-btn">
-                  Guardar
-                </button>
-              </div>
-            </Form>
-          )}
+
+                  {contact && (
+                    <div className="switch-container">
+                      <label htmlFor="isActive" className="switch-label">
+                        Activo
+                      </label>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          id="isActive"
+                          checked={values.isactive}
+                          onChange={(e) =>
+                            setFieldValue('isactive', e.target.checked)
+                          }
+                        />
+                        <span className="slider"></span>
+                      </label>
+                    </div>
+                  )}
+                  <br />
+                </div>
+                {!contact && (
+  <div className="modal-footer">
+    <button type="button" className="cancel-btn" onClick={closeModal}>
+      Cancelar
+    </button>
+    <button type="submit" className="submit-btn">
+      Guardar
+    </button>
+  </div>
+)}
+
+              </Form>
+            );
+          }}
         </Formik>
       </div>
+      <ConfirmDeleteModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          await handleDelete(contact?.id || '', setUsersList, setAlerts, () =>
+            setShowDeleteModal(false)
+          );
+          closeModal();
+        }}
+        userName={contact?.name || 'este usuario'}
+      />
     </div>
   );
 };

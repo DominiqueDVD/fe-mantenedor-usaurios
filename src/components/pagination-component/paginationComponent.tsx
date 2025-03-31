@@ -19,27 +19,28 @@ const PaginationComponent: React.FC<PaginationProps> = ({ currentPage, totalPage
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
-
+  
     pages.push(1);
-
+  
     if (currentPage > 2) {
       pages.push("...");
     }
-
+  
     if (currentPage !== 1 && currentPage !== totalPages) {
       pages.push(currentPage);
     }
-
+  
     if (currentPage < totalPages - 1) {
       pages.push("...");
     }
-
+  
     if (totalPages > 1) {
       pages.push(totalPages);
     }
-
+  
     return pages;
   };
+  
 
   return (
     <div className="pagination-container">
